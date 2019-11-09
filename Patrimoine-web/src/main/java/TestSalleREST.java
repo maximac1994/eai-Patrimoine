@@ -25,8 +25,8 @@ import services.ServiceSalleLocal;
  *
  * @author jerom
  */
-@Path("salle")
-public class SalleRest {
+@Path("testSalle")
+public class TestSalleREST {
     
     ServiceSalleLocal serviceSalleLocal;
     
@@ -35,7 +35,7 @@ public class SalleRest {
 
     // Convertisseur JSON
     private Gson gson;
-    public SalleRest(){
+    public TestSalleREST(){
         this.gson = new Gson();
         serviceSalleLocal = lookupServiceSalle();
     }
@@ -50,10 +50,12 @@ public class SalleRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void createSalle(String content) {
-        System.out.println(content);
-        RSalle salle = gson.fromJson(content, RSalle.class);
-        //RSalle salle = gson.fromJson(content, RSalle.class);
-        serviceSalleLocal.ajouterSalle(salle);        
+        
+//        try {
+//            return Response.ok(this.gson.toJson(this.serviceSalleLocal.ajouterSalle(content))).build();
+//        } catch (SalleExistanteException ex) {
+//            
+//        }
     }
     
     private ServiceSalleLocal lookupServiceSalle() {

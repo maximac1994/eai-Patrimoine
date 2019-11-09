@@ -5,12 +5,18 @@
  */
 package business;
 
+import entities.Equipement;
 import entities.Salle;
+import entities.SalleEquipement;
+import entities.SalleEquipementPK;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import repositories.EquipementFacadeLocal;
+import repositories.SalleEquipementFacadeLocal;
 import repositories.SalleFacadeLocal;
+import ressources.REquipement;
 
 /**
  *
@@ -22,10 +28,29 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     @EJB
     SalleFacadeLocal salleFacadeLocal;
     
+    @EJB
+    SalleEquipementFacadeLocal salleEquipementFacadeLocal;
+    
+    @EJB
+    EquipementFacadeLocal equipementFacadeLocal;
+    
     @Override
-    public void creerSalle(long capacite) {
-        //Salle salle = new Salle(capacite);
-        //this.salleFacade.create(client);
+    public void creerSalle(int capacite, List<REquipement> equipements) {
+        Salle salle = new Salle();
+        salle.setCapacite(capacite);
+        salleFacadeLocal.create(salle);
+        
+        
+        for (REquipement equipement : equipements) {
+            SalleEquipementPK salleEquipementPK = new SalleEquipementPK();
+            salleEquipementPK.setIdEquipement(equipement.getId());
+            salleEquipementPK.setNumeroSalle(salle.getNumeroSalle());
+            
+            SalleEquipement salleEquipement = new SalleEquipement();
+            salleEquipement.setSalleEquipementPK(salleEquipementPK);
+            
+            salleEquipementFacadeLocal.create(salleEquipement);
+        }
     }
 
     @Override
@@ -33,15 +58,31 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         //Planning planning = new Planning(idSalle, date, etat);
         //this.planningFacade.create(planning);
     }
+    
 
-    @Override
-    public void ajouterEquipement(long idEquipement) {
-        
-    }
+//    @Override
+//    public void ajouterEquipement(long idEquipement) {
+//        
+//    }
 
     @Override
     public List<Salle> listerSalles() {
         return salleFacadeLocal.findAll();
+    }
+
+    @Override
+    public List<Equipement> listerEquipements() {
+        return equipementFacadeLocal.findAll();
+    }
+
+    @Override
+    public void supprimerSalle(String numeroSalle) {
+        
+    }
+
+    @Override
+    public void modifierCapaciteSalle(String numeroSalle, int capacite) {
+        
     }
 
     

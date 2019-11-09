@@ -11,6 +11,9 @@ import entities.Salle;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import ressources.RSalle;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.Gson;
 
 /**
  *
@@ -20,13 +23,25 @@ import javax.ejb.Stateless;
 public class ServiceSalle implements ServiceSalleLocal {
 
     @EJB
-    GestionPatrimoineLocal gestionpatrimoineLocal;
+    GestionPatrimoineLocal gestionPatrimoineLocal;
     
     @Override
     public List<Salle> listerSalles() {
-       return gestionpatrimoineLocal.listerSalles();
+       return gestionPatrimoineLocal.listerSalles();
     }
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
+
+    @Override
+    public void ajouterSalle(RSalle salle) {
+        
+//        try {
+//            RSalle salle = this.gson.fromJson(s, RSalle.class);
+//        } catch (JsonSyntaxException e) {
+//            
+//        }
+        gestionPatrimoineLocal.creerSalle(salle.getCapacite(), salle.getEquipements());
+        //return "Ok";
+    }
 }

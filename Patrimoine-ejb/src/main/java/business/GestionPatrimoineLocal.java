@@ -5,9 +5,11 @@
  */
 package business;
 
+import entities.Equipement;
 import entities.Salle;
 import java.util.Date;
 import java.util.List;
+import ressources.REquipement;
 
 /**
  *
@@ -15,12 +17,19 @@ import java.util.List;
  */
 public interface GestionPatrimoineLocal {
     
-    void creerSalle(long capacite);
+    void creerSalle(int capacite, List<REquipement> equipements);
+    
+    void supprimerSalle(String numeroSalle);
+    
+    void modifierCapaciteSalle(String numeroSalle, int capacite);
     
     void creerPlanning(long idSalle, Date date, String etat);
     
-    void ajouterEquipement(long idEquipement);
+    
+    // void ajouterEquipement(long idEquipement);
     
     List<Salle> listerSalles();
+    
+    List<Equipement> listerEquipements();
     
 }
