@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 import ressources.RSalle;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.Gson;
+import exceptions.SalleInconnueException;
 
 /**
  *
@@ -43,5 +44,17 @@ public class ServiceSalle implements ServiceSalleLocal {
 //        }
         gestionPatrimoineLocal.creerSalle(salle.getCapacite(), salle.getEquipements());
         //return "Ok";
+    }
+
+    @Override
+    public Salle modifierCapaciteSalle(String numeroSalle, int capacite) {
+        Salle s = gestionPatrimoineLocal.getSalle(numeroSalle);
+        gestionPatrimoineLocal.modifierCapaciteSalle(numeroSalle, capacite);
+        return s;
+    }
+
+    @Override
+    public void supprimerSalle(String numeroSalle) throws SalleInconnueException {
+        gestionPatrimoineLocal.supprimerSalle(numeroSalle);
     }
 }

@@ -7,6 +7,7 @@ package business;
 
 import entities.Equipement;
 import entities.Salle;
+import exceptions.SalleInconnueException;
 import java.util.Date;
 import java.util.List;
 import ressources.REquipement;
@@ -19,17 +20,18 @@ public interface GestionPatrimoineLocal {
     
     void creerSalle(int capacite, List<REquipement> equipements);
     
-    void supprimerSalle(String numeroSalle);
+    void supprimerSalle(String numeroSalle) throws SalleInconnueException;
     
     void modifierCapaciteSalle(String numeroSalle, int capacite);
     
     void creerPlanning(long idSalle, Date date, String etat);
-    
-    
+
     // void ajouterEquipement(long idEquipement);
     
     List<Salle> listerSalles();
     
     List<Equipement> listerEquipements();
+    
+    Salle getSalle(String numeroSalle);
     
 }

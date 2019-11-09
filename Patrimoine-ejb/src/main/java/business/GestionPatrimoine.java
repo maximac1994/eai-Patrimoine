@@ -9,6 +9,7 @@ import entities.Equipement;
 import entities.Salle;
 import entities.SalleEquipement;
 import entities.SalleEquipementPK;
+import exceptions.SalleInconnueException;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
@@ -58,12 +59,6 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         //Planning planning = new Planning(idSalle, date, etat);
         //this.planningFacade.create(planning);
     }
-    
-
-//    @Override
-//    public void ajouterEquipement(long idEquipement) {
-//        
-//    }
 
     @Override
     public List<Salle> listerSalles() {
@@ -76,15 +71,24 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     }
 
     @Override
-    public void supprimerSalle(String numeroSalle) {
-        
+    public void supprimerSalle(String numeroSalle) throws SalleInconnueException {
+        Salle salle = salleFacadeLocal.find(numeroSalle);
+        if (salle == null) {
+            throw new SalleInconnueException();
+        }
+        salleFacadeLocal.remove(salle);
     }
 
     @Override
     public void modifierCapaciteSalle(String numeroSalle, int capacite) {
-        
+        Salle salle = salleFacadeLocal.find(numeroSalle);
+        salle.setCapacite(capacite);
+        salleFacadeLocal.edit(salle);
     }
 
-    
-    
+    @Override
+    public Salle getSalle(String numeroSalle) {
+        Salle salle = salleFacadeLocal.find(numeroSalle);
+        return salle;
+    }
 }
