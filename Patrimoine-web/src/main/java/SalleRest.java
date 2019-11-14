@@ -1,6 +1,7 @@
 
 import com.google.gson.Gson;
 import entities.Salle;
+import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,6 +9,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -49,37 +51,37 @@ public class SalleRest {
     
     @GET
     @Produces (MediaType.APPLICATION_JSON)
-    public String getJson() {
-        return(gson.toJson(serviceSalleLocal.listerSalles()));
+    public Response listSalles() {
+        return Response.ok(gson.toJson(serviceSalleLocal.listerSalles())).build();
     }
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public void createSalle(String content) {
-        RSalle salle = gson.fromJson(content, RSalle.class);
-        serviceSalleLocal.ajouterSalle(salle);        
+    public Response addSalle(String content) {
+        try {
+            
+            RSalle salle = gson.fromJson(content, RSalle.class);
+            Salle s = serviceSalleLocal.getSalle(salle.getNumeroSalle());
+            if(s!=null){
+                throw new SalleExistanteException();
+            }
+            serviceSalleLocal.ajouterSalle(salle);  
+        } catch (SalleExistanteException ex) {
+            return Response.status(Response.Status.CONFLICT).entity("Salle déjà existante !").build();
+        }
+        return Response.ok("Salle correctement ajoutée !").build();
     }
     
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response modifierCapaciteSalle(String c) {
-        RSalle salle1 = gson.fromJson(c, RSalle.class);
-        String numeroSalle = salle1.getNumeroSalle();
-        int capacite = salle1.getCapacite();
-        Salle s;
-        
-        s = serviceSalleLocal.modifierCapaciteSalle(numeroSalle, capacite);
-        
-        return Response.ok(this.gson.toJson(s)).build();
-    }
-    
+
     @DELETE
-    public Response supprimerSalle(String numeroSalle) throws SalleInconnueException {
+    public Response removeSalle(@QueryParam("numeroSalle") String numeroSalle) throws SalleInconnueException {
 
+        try {
             serviceSalleLocal.supprimerSalle(numeroSalle);
-
-        return Response.ok().build();
+        } catch (SalleInconnueException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Salle inexistante !").build();
+        }
+        return Response.ok("Salle correctement supprimée !").build();
     }
     
     private ServiceSalleLocal lookupServiceSalle() {

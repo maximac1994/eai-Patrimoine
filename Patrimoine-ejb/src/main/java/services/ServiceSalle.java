@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 import ressources.RSalle;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.Gson;
+import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
 
 /**
@@ -35,26 +36,24 @@ public class ServiceSalle implements ServiceSalleLocal {
     // "Insert Code > Add Business Method")
 
     @Override
-    public void ajouterSalle(RSalle salle) {
+    public void ajouterSalle(RSalle salle) throws SalleExistanteException {
         
 //        try {
 //            RSalle salle = this.gson.fromJson(s, RSalle.class);
 //        } catch (JsonSyntaxException e) {
 //            
 //        }
-        gestionPatrimoineLocal.creerSalle(salle.getCapacite(), salle.getEquipements());
+        gestionPatrimoineLocal.creerSalle(salle.getNumeroSalle(), salle.getCapacite(), salle.getEquipements());
         //return "Ok";
-    }
-
-    @Override
-    public Salle modifierCapaciteSalle(String numeroSalle, int capacite) {
-        Salle s = gestionPatrimoineLocal.getSalle(numeroSalle);
-        gestionPatrimoineLocal.modifierCapaciteSalle(numeroSalle, capacite);
-        return s;
     }
 
     @Override
     public void supprimerSalle(String numeroSalle) throws SalleInconnueException {
         gestionPatrimoineLocal.supprimerSalle(numeroSalle);
+    }
+    
+    @Override
+    public Salle getSalle(String numeroSalle) {
+        return gestionPatrimoineLocal.getSalle(numeroSalle);
     }
 }

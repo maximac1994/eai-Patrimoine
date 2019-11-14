@@ -6,6 +6,7 @@
 package services;
 
 import entities.Salle;
+import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
 import java.util.List;
 import javax.ejb.Local;
@@ -18,8 +19,8 @@ import ressources.RSalle;
 @Local
 public interface ServiceSalleLocal {
     public List<Salle> listerSalles();
-    public void ajouterSalle(RSalle salle);
-    public Salle modifierCapaciteSalle(String numeroSalle, int capacite);
+    public Salle getSalle(String numeroSalle);
+    public void ajouterSalle(RSalle salle) throws SalleExistanteException;;
     public void supprimerSalle(String numeroSalle) throws SalleInconnueException;
     //public void ajouterSalle(String salle);
     //public String ajouterSalle(RSalle salle);

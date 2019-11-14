@@ -1,5 +1,7 @@
 
 import com.google.gson.Gson;
+import entities.Equipement;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -9,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import services.ServiceEquipementLocal;
 
@@ -39,8 +42,8 @@ public class EquipementRest {
     
     @GET
     @Produces (MediaType.APPLICATION_JSON)
-    public String getJson() {
-        return(gson.toJson(serviceEquipementLocal.listerEquipements()));
+    public Response listerEquipements() {
+        return Response.ok((gson.toJson(serviceEquipementLocal.listerEquipements()))).build();
     }
     
     private ServiceEquipementLocal lookupServiceEquipement() {

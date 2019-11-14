@@ -9,6 +9,7 @@ import entities.Equipement;
 import entities.Salle;
 import entities.SalleEquipement;
 import entities.SalleEquipementPK;
+import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
 import java.util.Date;
 import java.util.List;
@@ -36,13 +37,15 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     EquipementFacadeLocal equipementFacadeLocal;
     
     @Override
-    public void creerSalle(int capacite, List<REquipement> equipements) {
+    public void creerSalle(String numeroSalle, int capacite, List<REquipement> equipements) throws SalleExistanteException {
         Salle salle = new Salle();
+        salle.setNumeroSalle(numeroSalle);
         salle.setCapacite(capacite);
         salleFacadeLocal.create(salle);
         
         
         for (REquipement equipement : equipements) {
+            //SalleEquipement salleEquipement = new SalleEquipement(numeroSalle, equipement.getId());
             SalleEquipementPK salleEquipementPK = new SalleEquipementPK();
             salleEquipementPK.setIdEquipement(equipement.getId());
             salleEquipementPK.setNumeroSalle(salle.getNumeroSalle());
@@ -52,6 +55,7 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
             
             salleEquipementFacadeLocal.create(salleEquipement);
         }
+        
     }
 
     @Override
@@ -79,12 +83,6 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         salleFacadeLocal.remove(salle);
     }
 
-    @Override
-    public void modifierCapaciteSalle(String numeroSalle, int capacite) {
-        Salle salle = salleFacadeLocal.find(numeroSalle);
-        salle.setCapacite(capacite);
-        salleFacadeLocal.edit(salle);
-    }
 
     @Override
     public Salle getSalle(String numeroSalle) {
