@@ -6,6 +6,7 @@
 package repositories;
 
 import entities.SalleEquipement;
+import entities.SalleEquipementPK;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -23,6 +24,8 @@ public interface SalleEquipementFacadeLocal {
     void remove(SalleEquipement salleEquipement);
 
     SalleEquipement find(Object id);
+    
+    List<SalleEquipementPK> findByNum(String numeroSalle);
 
     List<SalleEquipement> findAll();
 

@@ -37,17 +37,17 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     EquipementFacadeLocal equipementFacadeLocal;
     
     @Override
-    public void creerSalle(String numeroSalle, int capacite, List<REquipement> equipements) throws SalleExistanteException {
+    public void creerSalle(String numeroSalle, int capacite, List<Integer> equipements) throws SalleExistanteException {
         Salle salle = new Salle();
         salle.setNumeroSalle(numeroSalle);
         salle.setCapacite(capacite);
         salleFacadeLocal.create(salle);
         
-        
-        for (REquipement equipement : equipements) {
+        //for (REquipement equipement : equipements) {
+        for (Integer equipement : equipements) {
             //SalleEquipement salleEquipement = new SalleEquipement(numeroSalle, equipement.getId());
             SalleEquipementPK salleEquipementPK = new SalleEquipementPK();
-            salleEquipementPK.setIdEquipement(equipement.getId());
+            salleEquipementPK.setIdEquipement(equipement);
             salleEquipementPK.setNumeroSalle(salle.getNumeroSalle());
             
             SalleEquipement salleEquipement = new SalleEquipement();
@@ -80,7 +80,17 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         if (salle == null) {
             throw new SalleInconnueException();
         }
+        //List<SalleEquipementPK> listSallesEPK = salleEquipementFacadeLocal.findByNum(numeroSalle);
+        SalleEquipement salleE = salleEquipementFacadeLocal.find(numeroSalle);
+        //System.out.println(salleE);
+        //System.out.println(listSallesEPK);
+        // SalleEquipementPK salleEPK = salleE.getSalleEquipementPK();
+        
         salleFacadeLocal.remove(salle);
+        
+        //for (SalleEquipementPK sePK : listSallesEPK) {
+            salleEquipementFacadeLocal.remove(salleE);
+        //}
     }
 
 

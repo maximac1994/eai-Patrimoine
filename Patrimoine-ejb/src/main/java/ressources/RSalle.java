@@ -16,7 +16,7 @@ public class RSalle {
     
     String numeroSalle;
     int capacite;
-    List<REquipement> equipements;
+    List<Integer> equipements;
 
     public String getNumeroSalle() {
         return numeroSalle;
@@ -26,7 +26,7 @@ public class RSalle {
         return capacite;
     }
 
-    public List<REquipement> getEquipements() {
+    public List<Integer> getEquipements() {
         return equipements;
     }
 
@@ -38,7 +38,7 @@ public class RSalle {
         this.capacite = capacite;
     }
 
-    public void setEquipements(List<REquipement> equipements) {
+    public void setEquipements(List<Integer> equipements) {
         this.equipements = equipements;
     }
     

@@ -6,9 +6,14 @@
 package repositories;
 
 import entities.SalleEquipement;
+import entities.SalleEquipementPK;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -27,6 +32,20 @@ public class SalleEquipementFacade extends AbstractFacade<SalleEquipement> imple
 
     public SalleEquipementFacade() {
         super(SalleEquipement.class);
+    }
+
+    @Override
+    public List<SalleEquipementPK> findByNum(String numeroSalle) {
+
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<SalleEquipementPK> cq = cb.createQuery(SalleEquipementPK.class);
+        Root<SalleEquipementPK> root = cq.from(SalleEquipementPK.class);
+        cq.where(
+                cb.and(
+                        cb.equal(cb.upper(root.get("numeroSalle").as(String.class)), numeroSalle)
+                )
+        );
+        return getEntityManager().createQuery(cq).getResultList();
     }
     
 }

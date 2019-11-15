@@ -19,7 +19,7 @@ import ressources.REquipement;
  */
 public interface GestionPatrimoineLocal {
     
-    void creerSalle(String numeroSalle, int capacite, List<REquipement> equipements) throws SalleExistanteException;
+    void creerSalle(String numeroSalle, int capacite, List<Integer> equipements) throws SalleExistanteException;
     
     void supprimerSalle(String numeroSalle) throws SalleInconnueException;
     
