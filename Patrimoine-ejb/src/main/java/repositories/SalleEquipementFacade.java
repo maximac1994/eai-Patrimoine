@@ -47,5 +47,14 @@ public class SalleEquipementFacade extends AbstractFacade<SalleEquipement> imple
         );
         return getEntityManager().createQuery(cq).getResultList();
     }
+
+    @Override
+    public List<SalleEquipement> getEquipBySalle(String numeroSalle) {
+        List<SalleEquipement> listeSE = em.createNamedQuery("SalleEquipement.findByNumeroSalle")
+                .setParameter("numeroSalle", numeroSalle)
+                .getResultList();
+        
+        return listeSE;
+    }
     
 }

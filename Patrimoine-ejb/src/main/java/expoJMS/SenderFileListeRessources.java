@@ -6,9 +6,6 @@
 package expoJMS;
 
 import MessagesTypes.ListeSallesCompatibles;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -16,7 +13,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -25,27 +21,30 @@ import javax.naming.NamingException;
  *
  * @author jerom
  */
-public class SenderListeSallesCompatibles {
-    
-    public static void main(String[] args) {
+public class SenderFileListeRessources {
+    Context context = null;
+    ConnectionFactory factory = null;
+    Connection connection = null;
+    String factoryName = null;
+    String destName = null;
+    Destination dest = null;
+    Session session = null;
+    MessageProducer sender = null;
+
+    public SenderFileListeRessources() {
         
-        Context context = null;
-        ConnectionFactory factory = null;
-        Connection connection = null;
-        String factoryName = "ConnectionFactory";
-        String destName = "FILE_LISTE_RESSOURCES";
-        Destination dest = null;
-        int count = 1;
-        Session session = null;
-        MessageProducer sender = null;
-        String text = "Message ";
+        // Initialisation de la connexion
+        System.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
+        System.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
+        System.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
+        factoryName = "jms/__defaultConnectionFactory";
+        destName = "FILE_LISTE_RESSOURCES";
         
-        try {
-            // create the JNDI initial context.
+        try{
             context = new InitialContext();
 
             // look up the ConnectionFactory
-            factory = (ConnectionFactory) context.lookup("jms/__defaultConnectionFactory");
+            factory = (ConnectionFactory) context.lookup(factoryName);
 
             // look up the Destination
             dest = (Destination) context.lookup(destName);
@@ -61,27 +60,22 @@ public class SenderListeSallesCompatibles {
 
             // start the connection, to enable message sends
             connection.start();
-
-            for (int i = 0; i < count; ++i) {
-                
-                HashMap<Integer, List<Date>> sallesCompatibles = new HashMap<Integer, List<Date>>();
-                
-                ListeSallesCompatibles listeSallesCompatibles = new ListeSallesCompatibles();
-                listeSallesCompatibles.setIdInstance(1);
-                listeSallesCompatibles.setSallesCompatibles(sallesCompatibles);
-                
-                ObjectMessage message = session.createObjectMessage();
-                message.setObject(listeSallesCompatibles);
-                
-                sender.send(message);
-                System.out.println("Sent: " + message.getObject());
-                
-            }
+        }catch (NamingException exception) {
+            exception.printStackTrace();
+        }catch (JMSException exception) {
+            exception.printStackTrace();
+        }
+    }
+    
+    public void sendListeSallesComp (ListeSallesCompatibles liste) {
+        try {
+            // Envoi du message contenant la liste des salles compatibles
+            ObjectMessage om = session.createObjectMessage(liste);
+            sender.send(om);
         } catch (JMSException exception) {
             exception.printStackTrace();
-        } catch (NamingException exception) {
-            exception.printStackTrace();
-        } finally {
+        }
+       finally {
             // close the context
             if (context != null) {
                 try {

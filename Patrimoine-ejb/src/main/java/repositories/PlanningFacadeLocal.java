@@ -27,6 +27,8 @@ public interface PlanningFacadeLocal {
     List<Planning> findAll();
 
     List<Planning> findRange(int[] range);
+    
+    List<Planning> getDatesOccupees(String numeroSalle);
 
     int count();
     

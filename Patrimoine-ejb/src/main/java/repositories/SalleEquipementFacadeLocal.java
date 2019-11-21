@@ -30,6 +30,8 @@ public interface SalleEquipementFacadeLocal {
     List<SalleEquipement> findAll();
 
     List<SalleEquipement> findRange(int[] range);
+    
+    List<SalleEquipement> getEquipBySalle(String numeroSalle);
 
     int count();
     

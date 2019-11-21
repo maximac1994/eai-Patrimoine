@@ -5,6 +5,7 @@
  */
 package business;
 
+import MessagesTypes.DemandeRessources;
 import entities.Equipement;
 import entities.Salle;
 import exceptions.SalleExistanteException;
@@ -24,6 +25,8 @@ public interface GestionPatrimoineLocal {
     void supprimerSalle(String numeroSalle) throws SalleInconnueException;
     
     void creerPlanning(long idSalle, Date date, String etat);
+    
+    void sendListeSallesComp(DemandeRessources dr);
 
     // void ajouterEquipement(long idEquipement);
     
