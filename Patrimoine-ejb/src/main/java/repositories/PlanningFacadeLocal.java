@@ -6,6 +6,7 @@
 package repositories;
 
 import entities.Planning;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -29,6 +30,8 @@ public interface PlanningFacadeLocal {
     List<Planning> findRange(int[] range);
     
     List<Planning> getDatesOccupees(String numeroSalle);
+    
+    Planning findByNumeroSalleDateJ(String numeroSalle, Date dateJ);
 
     int count();
     

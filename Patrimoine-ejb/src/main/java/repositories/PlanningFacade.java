@@ -6,6 +6,7 @@
 package repositories;
 
 import entities.Planning;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -37,6 +38,16 @@ public class PlanningFacade extends AbstractFacade<Planning> implements Planning
             .getResultList();
         
         return listePlanning;
+    }
+
+    @Override
+    public Planning findByNumeroSalleDateJ(String numeroSalle, Date dateJ) {
+        Planning planning = (Planning) em.createNamedQuery("Planning.findByNumeroSalleDateJ")
+            .setParameter("numeroSalle", numeroSalle)
+            .setParameter("dateJ", dateJ)
+            .getSingleResult();
+        
+        return planning;
     }
     
 }

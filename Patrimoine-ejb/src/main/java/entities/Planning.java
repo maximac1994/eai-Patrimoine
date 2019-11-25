@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Planning.findAll", query = "SELECT p FROM Planning p")
     , @NamedQuery(name = "Planning.findByNumeroSalle", query = "SELECT p FROM Planning p WHERE p.planningPK.numeroSalle = :numeroSalle")
+    , @NamedQuery(name = "Planning.findByNumeroSalleDateJ", query = "SELECT p FROM Planning p WHERE p.planningPK.numeroSalle = :numeroSalle AND p.planningPK.dateJ = :dateJ")
     , @NamedQuery(name = "Planning.findByDateJ", query = "SELECT p FROM Planning p WHERE p.planningPK.dateJ = :dateJ")
     , @NamedQuery(name = "Planning.findByEtat", query = "SELECT p FROM Planning p WHERE p.etat = :etat")})
 public class Planning implements Serializable {

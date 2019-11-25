@@ -6,6 +6,8 @@
 package business;
 
 import MessagesTypes.DemandeRessources;
+import MessagesTypes.EvenementFormationAnnulation;
+import MessagesTypes.EvenementFormationProjet2;
 import entities.Equipement;
 import entities.Salle;
 import exceptions.SalleExistanteException;
@@ -26,7 +28,7 @@ public interface GestionPatrimoineLocal {
     
     void creerPlanning(long idSalle, Date date, String etat);
     
-    void sendListeSallesComp(DemandeRessources dr);
+    void envoyerListeSallesComp(DemandeRessources dr);
 
     // void ajouterEquipement(long idEquipement);
     
@@ -36,4 +38,7 @@ public interface GestionPatrimoineLocal {
     
     Salle getSalle(String numeroSalle);
     
+    void changerEtat(EvenementFormationAnnulation evt, String etat);
+    
+    void supprimerPlanning(EvenementFormationAnnulation evt);
 }

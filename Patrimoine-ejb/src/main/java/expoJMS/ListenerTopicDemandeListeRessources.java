@@ -50,11 +50,9 @@ public class ListenerTopicDemandeListeRessources implements MessageListener {
         try {
             // Envoi de la liste des salles compatibles
             dr = (DemandeRessources)om.getObject();
-            gestionPatrimoineLocal.sendListeSallesComp(dr);
+            gestionPatrimoineLocal.envoyerListeSallesComp(dr);
         } catch (JMSException ex) {
             Logger.getLogger(ListenerTopicDemandeListeRessources.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
-    
 }
