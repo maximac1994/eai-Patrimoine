@@ -7,6 +7,7 @@ package business;
 
 import MessagesTypes.DemandeRessources;
 import MessagesTypes.EvenementFormationAnnulation;
+import MessagesTypes.EvenementFormationChangeEtat;
 import MessagesTypes.EvenementFormationProjet2;
 import MessagesTypes.ListeSallesCompatibles;
 import MessagesTypes.SalleComp;
@@ -191,7 +192,7 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     }
 
     @Override
-    public void changerEtat(EvenementFormationAnnulation evt, String etat) {
+    public void changerEtat(EvenementFormationChangeEtat evt, String etat) {
         
         String numeroSalle = evt.getIdSalle();
         Date dateD = evt.getDateDebut();

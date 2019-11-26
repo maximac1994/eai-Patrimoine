@@ -47,9 +47,9 @@ public class ListenerTopicFormation implements MessageListener {
         
 //        System.out.println("LAAAAA");
         ObjectMessage om = (ObjectMessage)message;
-        EvenementFormationAnnulation evt;
-        EvenementFormationAnnulation evt2;
-        EvenementFormationAnnulation evt3;
+        EvenementFormationAnnulation evtAnnulation;
+        EvenementFormationProjet2 evtProjet2;
+        EvenementFormationValidation evtValidation;
         String jmsType = "";
         
         try {
@@ -61,8 +61,8 @@ public class ListenerTopicFormation implements MessageListener {
         if("projet2".equals(jmsType)) {
             
             try {
-                evt = (EvenementFormationAnnulation) om.getObject();
-                gestionPatrimoineLocal.changerEtat(evt, "PRESSENTIE");
+                evtProjet2 = (EvenementFormationProjet2) om.getObject();
+                gestionPatrimoineLocal.changerEtat(evtProjet2, "PRESSENTIE");
             } catch (JMSException ex) {
                 Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -71,8 +71,8 @@ public class ListenerTopicFormation implements MessageListener {
         
         if("validation".equals(jmsType)) {
             try {
-                evt3 = (EvenementFormationAnnulation) om.getObject();
-                gestionPatrimoineLocal.changerEtat(evt3, "AFFECTEE");
+                evtValidation = (EvenementFormationValidation) om.getObject();
+                gestionPatrimoineLocal.changerEtat(evtValidation, "AFFECTEE");
             } catch (JMSException ex) {
                 Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -80,8 +80,8 @@ public class ListenerTopicFormation implements MessageListener {
         
         if("annulation".equals(jmsType)) {
             try {
-                evt2 = (EvenementFormationAnnulation) om.getObject();
-                gestionPatrimoineLocal.supprimerPlanning(evt2);
+                evtAnnulation = (EvenementFormationAnnulation) om.getObject();
+                gestionPatrimoineLocal.supprimerPlanning(evtAnnulation);
             } catch (JMSException ex) {
                 Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.SEVERE, null, ex);
             }

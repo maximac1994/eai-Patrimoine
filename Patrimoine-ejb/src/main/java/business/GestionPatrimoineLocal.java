@@ -7,6 +7,7 @@ package business;
 
 import MessagesTypes.DemandeRessources;
 import MessagesTypes.EvenementFormationAnnulation;
+import MessagesTypes.EvenementFormationChangeEtat;
 import MessagesTypes.EvenementFormationProjet2;
 import entities.Equipement;
 import entities.Salle;
@@ -38,7 +39,7 @@ public interface GestionPatrimoineLocal {
     
     Salle getSalle(String numeroSalle);
     
-    void changerEtat(EvenementFormationAnnulation evt, String etat);
+    void changerEtat(EvenementFormationChangeEtat evt, String etat);
     
     void supprimerPlanning(EvenementFormationAnnulation evt);
 }
