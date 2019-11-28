@@ -44,7 +44,8 @@ public class ListenerTopicFormation implements MessageListener {
     
     @Override
     public void onMessage(Message message) {
-        
+        Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.expoJMS ListernerTopicFormation - onMessage() : " + message.toString());
+
 //        System.out.println("LAAAAA");
         ObjectMessage om = (ObjectMessage)message;
         EvenementFormationAnnulation evtAnnulation;
@@ -62,7 +63,8 @@ public class ListenerTopicFormation implements MessageListener {
             
             try {
                 evtProjet2 = (EvenementFormationProjet2) om.getObject();
-                gestionPatrimoineLocal.changerEtat(evtProjet2, "PRESSENTIE");
+                gestionPatrimoineLocal.creerPlanning(evtProjet2);
+//                gestionPatrimoineLocal.changerEtat(evtProjet2, "PRESSENTIE");
             } catch (JMSException ex) {
                 Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.SEVERE, null, ex);
             }

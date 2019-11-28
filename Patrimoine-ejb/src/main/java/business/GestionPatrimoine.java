@@ -13,6 +13,7 @@ import MessagesTypes.ListeSallesCompatibles;
 import MessagesTypes.SalleComp;
 import entities.Equipement;
 import entities.Planning;
+import entities.PlanningPK;
 import entities.Salle;
 import entities.SalleEquipement;
 import entities.SalleEquipementPK;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import repositories.EquipementFacadeLocal;
@@ -57,6 +60,7 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     
     @Override
     public void creerSalle(String numeroSalle, int capacite, List<Integer> equipements) throws SalleExistanteException {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - creerSalle() : " + numeroSalle + ", " + capacite + ", " + equipements.toString());
         Salle salle = new Salle();
         salle.setNumeroSalle(numeroSalle);
         salle.setCapacite(capacite);
@@ -78,23 +82,66 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     }
 
     @Override
-    public void creerPlanning(long idSalle, Date date, String etat) {
-        //Planning planning = new Planning(idSalle, date, etat);
-        //this.planningFacade.create(planning);
+    public void creerPlanning(EvenementFormationProjet2 evt) {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - creerPlanning() : " + evt.toString());
+
+        String numeroSalle = evt.getIdSalle();
+        Date dateDebut = evt.getDateDebut();
+        Date dateFin = null;
+        Date dateD = evt.getDateDebut();
+        int cpt = evt.getDuree();
+        
+        for (int i = 0; i < cpt; i++) {
+//            System.out.println("AVT : " + dateD);
+            Planning planning = new Planning();
+//            planning.setEtat("PRESSENTIE");
+            PlanningPK planningPK = new PlanningPK();
+            planningPK.setNumeroSalle(numeroSalle);
+            planningPK.setDateJ(dateD);
+            planning.setPlanningPK(planningPK);
+            planningFacadeLocal.create(planning);
+            
+            dateFin = dateD;
+            
+            Calendar c = Calendar.getInstance();
+            c.setTime(dateD);
+            DateFormat df = new SimpleDateFormat("EEEE");
+            String day = df.format(dateD);
+            if("vendredi".equals(day)){
+                c.add(Calendar.DATE, 3);  // number of days to add
+            } else {
+                c.add(Calendar.DATE, 1);
+            }
+            dateD = c.getTime();
+            
+            
+                    
+//            changerEtat(evt, "PRESSENTIE");
+            
+            
+            
+            
+            //System.out.println("APRES : " + date);
+        }
+        changerEtat(evt, "PRESSENTIE");
+        System.out.println("Salle correctement réservée du " + dateDebut + " au " + dateFin + ". Etat PRESSENTIE !");
     }
 
     @Override
     public List<Salle> listerSalles() {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - listerSalles()");
         return salleFacadeLocal.findAll();
     }
 
     @Override
     public List<Equipement> listerEquipements() {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - listerEquipements()");
         return equipementFacadeLocal.findAll();
     }
 
     @Override
     public void supprimerSalle(String numeroSalle) throws SalleInconnueException {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - supprimerSalle() : " + numeroSalle);
         Salle salle = salleFacadeLocal.find(numeroSalle);
         if (salle == null) {
             throw new SalleInconnueException();
@@ -115,12 +162,15 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
 
     @Override
     public Salle getSalle(String numeroSalle) {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - getSalle() : " + numeroSalle);
         Salle salle = salleFacadeLocal.find(numeroSalle);
         return salle;
     }
 
     @Override
     public void envoyerListeSallesComp(DemandeRessources dr) {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - envoyerListeSallesComp() : " + dr.toString());
+
         List<Integer> listeEquipementsNec = dr.getEquipementsNecessaires(); // Liste des équipements demandés
         List<Salle> listeAllSalles = salleFacadeLocal.findAll(); // Liste de toutes les salles
         
@@ -170,15 +220,16 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
                 salleComp.setNumeroSalle(salle.getNumeroSalle());
                 salleComp.setDatesOccupees(getDatesOccupees(salle.getNumeroSalle())); // Récupération du planning de la salle (dates occupées)
                 listeSallesComp.getListeSallesComp().add(salleComp); // Ajout de la salle à la liste à renvoyer
-                System.out.print(salle.getNumeroSalle() + " - " + getDatesOccupees(salle.getNumeroSalle()));
+//                System.out.print(salle.getNumeroSalle() + " - " + getDatesOccupees(salle.getNumeroSalle()));
             }
         }
         //System.out.print(listeSallesComp.getListeSallesComp().get(0).getNumeroSalle());
-        //sender.sendListeSallesComp(listeSallesComp);
+        sender.sendListeSallesComp(listeSallesComp);
     }
     
     private List<Date> getDatesOccupees(String numeroSalle) {
-        
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - getDatesOccupees() : " + numeroSalle);
+
         // Liste des dates occupées pour une salle
         List<Planning> listePlanning = planningFacadeLocal.getDatesOccupees(numeroSalle);
         
@@ -193,7 +244,8 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
 
     @Override
     public void changerEtat(EvenementFormationChangeEtat evt, String etat) {
-        
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - changerEtat() : " + evt.toString() + ", " + etat);
+
         String numeroSalle = evt.getIdSalle();
         Date dateD = evt.getDateDebut();
         int cpt = evt.getDuree();
@@ -221,6 +273,8 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
 
     @Override
     public void supprimerPlanning(EvenementFormationAnnulation evt) {
+        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - supprimerPlanning() : " + evt.toString());
+
         String numeroSalle = evt.getIdSalle();
         Date dateD = evt.getDateDebut();
         int cpt = evt.getDuree();

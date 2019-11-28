@@ -6,6 +6,8 @@
 package expoJMS;
 
 import MessagesTypes.ListeSallesCompatibles;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -68,6 +70,8 @@ public class SenderFileListeRessources {
     }
     
     public void sendListeSallesComp (ListeSallesCompatibles liste) {
+        Logger.getLogger(SenderFileListeRessources.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE]  Package.expoJMS SenderFileListeRessources - onMessage() : " + liste.toString());
+ 
         try {
             // Envoi du message contenant la liste des salles compatibles
             ObjectMessage om = session.createObjectMessage(liste);

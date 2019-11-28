@@ -27,7 +27,7 @@ public interface GestionPatrimoineLocal {
     
     void supprimerSalle(String numeroSalle) throws SalleInconnueException;
     
-    void creerPlanning(long idSalle, Date date, String etat);
+    void creerPlanning(EvenementFormationProjet2 evt);
     
     void envoyerListeSallesComp(DemandeRessources dr);
 

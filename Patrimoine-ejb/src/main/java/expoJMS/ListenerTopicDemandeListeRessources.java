@@ -42,7 +42,8 @@ public class ListenerTopicDemandeListeRessources implements MessageListener {
     
     @Override
     public void onMessage(Message message) {
-        
+        Logger.getLogger(ListenerTopicDemandeListeRessources.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.expoJMS ListenerTopicDemandeListeRessources - onMessage() : " + message.toString());
+
         // Réception du message
         ObjectMessage om = (ObjectMessage)message;
         DemandeRessources dr;
