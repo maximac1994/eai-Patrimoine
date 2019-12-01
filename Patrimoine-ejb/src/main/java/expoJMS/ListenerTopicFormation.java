@@ -24,7 +24,7 @@ import javax.jms.ObjectMessage;
  * @author jerom
  */
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "clientId", propertyValue = "TOPIC_FORMATION")
+    @ActivationConfigProperty(propertyName = "clientId", propertyValue = "TOPIC_FORMATION_PAT")
     ,
         @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "TOPIC_FORMATION")
     ,

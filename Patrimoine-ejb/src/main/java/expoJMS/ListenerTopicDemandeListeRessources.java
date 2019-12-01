@@ -22,7 +22,7 @@ import javax.jms.ObjectMessage;
  * @author jerom
  */
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "clientId", propertyValue = "TOPIC_DEMANDE_LISTE_RESSOURCES")
+    @ActivationConfigProperty(propertyName = "clientId", propertyValue = "TOPIC_DEMANDE_LISTE_RESSOURCES_PAT")
     ,
         @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "TOPIC_DEMANDE_LISTE_RESSOURCES")
     ,

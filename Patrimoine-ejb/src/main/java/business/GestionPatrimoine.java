@@ -57,6 +57,10 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     
     SenderFileListeRessources sender;
 
+    public GestionPatrimoine() {
+        this.sender = new SenderFileListeRessources();
+    }
+
     
     @Override
     public void creerSalle(String numeroSalle, int capacite, List<Integer> equipements) throws SalleExistanteException {
