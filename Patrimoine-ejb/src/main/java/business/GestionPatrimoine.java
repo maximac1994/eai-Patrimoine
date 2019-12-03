@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.jms.JMSException;
 import repositories.EquipementFacadeLocal;
 import repositories.PlanningFacadeLocal;
 import repositories.SalleEquipementFacadeLocal;
@@ -173,62 +174,66 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
 
     @Override
     public void envoyerListeSallesComp(DemandeRessources dr) {
-        Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - envoyerListeSallesComp() : " + dr.toString());
-
-        List<Integer> listeEquipementsNec = dr.getEquipementsNecessaires(); // Liste des équipements demandés
-        List<Salle> listeAllSalles = salleFacadeLocal.findAll(); // Liste de toutes les salles
-        
-        ListeSallesCompatibles listeSallesComp = new ListeSallesCompatibles(); // Liste des salles compatibles à renvoyer
-        listeSallesComp.setIdInstance(dr.getIdInstance()); // La liste concerne l'instance IdInstance
-        
-        // Parcours de toutes les salles de la BD
-        for(Salle salle : listeAllSalles) {
+        try {
+            Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - envoyerListeSallesComp() : " + dr.toString());
             
-            // On récupère les équipements de la salle
-            List<SalleEquipement> listeSE = salleEquipementFacadeLocal.getEquipBySalle(salle.getNumeroSalle());
-            boolean salleOk = true;
-            boolean capaciteOk = false;
-            int nbEquip = 0; // Compteur du nombre d'équipement
+            List<Integer> listeEquipementsNec = dr.getEquipementsNecessaires(); // Liste des équipements demandés
+            List<Salle> listeAllSalles = salleFacadeLocal.findAll(); // Liste de toutes les salles
             
-            if(dr.getNbMax() <= salle.getCapacite()) {
-                capaciteOk = true;
-            }
+            ListeSallesCompatibles listeSallesComp = new ListeSallesCompatibles(); // Liste des salles compatibles à renvoyer
+            listeSallesComp.setIdInstance(dr.getIdInstance()); // La liste concerne l'instance IdInstance
             
-            // Parcours des équipements demandés
-            for(Integer equipement : listeEquipementsNec) {
-                boolean equipOK = false;
+            // Parcours de toutes les salles de la BD
+            for(Salle salle : listeAllSalles) {
                 
+                // On récupère les équipements de la salle
+                List<SalleEquipement> listeSE = salleEquipementFacadeLocal.getEquipBySalle(salle.getNumeroSalle());
+                boolean salleOk = true;
+                boolean capaciteOk = false;
+                int nbEquip = 0; // Compteur du nombre d'équipement
                 
-                // Pour chaque équipement de la salle actuelle,
-                // s'il correspond à un équipement demandé, on incrémente le compteur de 1
-                // (Nécessaire pour prendre TOUS les équipements en compte s'il y en a plusieurs)
-                for(SalleEquipement se : listeSE) {
-                    if(equipement == se.getSalleEquipementPK().getIdEquipement()) {
-                        nbEquip++;
+                if(dr.getNbMax() <= salle.getCapacite()) {
+                    capaciteOk = true;
+                }
+                
+                // Parcours des équipements demandés
+                for(Integer equipement : listeEquipementsNec) {
+                    boolean equipOK = false;
+                    
+                    
+                    // Pour chaque équipement de la salle actuelle,
+                    // s'il correspond à un équipement demandé, on incrémente le compteur de 1
+                    // (Nécessaire pour prendre TOUS les équipements en compte s'il y en a plusieurs)
+                    for(SalleEquipement se : listeSE) {
+                        if(equipement == se.getSalleEquipementPK().getIdEquipement()) {
+                            nbEquip++;
+                        }
                     }
+                    //System.out.print("nbequip : " + nbEquip);
+                    //System.out.print("taille liste : " + listeEquipementsNec.size());
+                    // Si le nombre d'équipement correspond
+                    if (nbEquip == listeEquipementsNec.size()) {
+                        equipOK = true;
+                    }
+                    salleOk = equipOK;
                 }
-                //System.out.print("nbequip : " + nbEquip);
-                //System.out.print("taille liste : " + listeEquipementsNec.size());
-                // Si le nombre d'équipement correspond
-                if (nbEquip == listeEquipementsNec.size()) {
-                    equipOK = true;
-                }
-                salleOk = equipOK;
-            }
-            
-            salleOk = salleOk && capaciteOk;
-            
-            // Si la salle correspond aux équipements demandés
-            if(salleOk) {
-                SalleComp salleComp = new SalleComp();
-                salleComp.setNumeroSalle(salle.getNumeroSalle());
-                salleComp.setDatesOccupees(getDatesOccupees(salle.getNumeroSalle())); // Récupération du planning de la salle (dates occupées)
-                listeSallesComp.getListeSallesComp().add(salleComp); // Ajout de la salle à la liste à renvoyer
+                
+                salleOk = salleOk && capaciteOk;
+                
+                // Si la salle correspond aux équipements demandés
+                if(salleOk) {
+                    SalleComp salleComp = new SalleComp();
+                    salleComp.setNumeroSalle(salle.getNumeroSalle());
+                    salleComp.setDatesOccupees(getDatesOccupees(salle.getNumeroSalle())); // Récupération du planning de la salle (dates occupées)
+                    listeSallesComp.getListeSallesComp().add(salleComp); // Ajout de la salle à la liste à renvoyer
 //                System.out.print(salle.getNumeroSalle() + " - " + getDatesOccupees(salle.getNumeroSalle()));
+                }
             }
+            //System.out.print(listeSallesComp.getListeSallesComp().get(0).getNumeroSalle());
+            sender.sendListeSallesComp(listeSallesComp);
+        } catch (JMSException ex) {
+            Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //System.out.print(listeSallesComp.getListeSallesComp().get(0).getNumeroSalle());
-        sender.sendListeSallesComp(listeSallesComp);
     }
     
     private List<Date> getDatesOccupees(String numeroSalle) {
