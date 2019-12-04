@@ -31,7 +31,7 @@ public interface PlanningFacadeLocal {
     
     List<Planning> getDatesOccupees(String numeroSalle);
     
-    Planning findByNumeroSalleDateJ(String numeroSalle, Date dateJ);
+    List<Planning> findByNumeroSalleDateJ(String numeroSalle, Date dateJ);
 
     int count();
     

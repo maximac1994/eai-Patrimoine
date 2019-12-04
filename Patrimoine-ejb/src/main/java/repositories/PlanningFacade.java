@@ -41,11 +41,12 @@ public class PlanningFacade extends AbstractFacade<Planning> implements Planning
     }
 
     @Override
-    public Planning findByNumeroSalleDateJ(String numeroSalle, Date dateJ) {
-        Planning planning = (Planning) em.createNamedQuery("Planning.findByNumeroSalleDateJ")
+    public List<Planning> findByNumeroSalleDateJ(String numeroSalle, Date dateJ) {
+        System.out.println("TEEEST : "+numeroSalle+" "+dateJ);
+        List<Planning> planning = em.createNamedQuery("Planning.findByNumeroSalleDateJ")
             .setParameter("numeroSalle", numeroSalle)
             .setParameter("dateJ", dateJ)
-            .getSingleResult();
+            .getResultList();
         
         return planning;
     }

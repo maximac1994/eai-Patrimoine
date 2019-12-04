@@ -118,15 +118,6 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
                 c.add(Calendar.DATE, 1);
             }
             dateD = c.getTime();
-            
-            
-                    
-//            changerEtat(evt, "PRESSENTIE");
-            
-            
-            
-            
-            //System.out.println("APRES : " + date);
         }
         changerEtat(evt, "PRESSENTIE");
         System.out.println("Salle correctement réservée du " + dateDebut + " au " + dateFin + ". Etat PRESSENTIE !");
@@ -254,43 +245,53 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
     @Override
     public void changerEtat(EvenementFormationChangeEtat evt, String etat) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - changerEtat() : " + evt.toString() + ", " + etat);
-
-        String numeroSalle = evt.getIdSalle();
+        System.out.println(evt.getDateDebut());
+        System.out.println(evt.getDuree());
         Date dateD = evt.getDateDebut();
-        int cpt = evt.getDuree();
+        int days = evt.getDuree();
         //int i;
-        
-        for (int i = 0; i < cpt; i++) {
-//            System.out.println("AVT : " + dateD);
-            Planning p = planningFacadeLocal.findByNumeroSalleDateJ(numeroSalle, dateD);
-            p.setEtat(etat);
-            Calendar c = Calendar.getInstance();
-            c.setTime(dateD);
+        while(days >0){
             DateFormat df = new SimpleDateFormat("EEEE");
             String day = df.format(dateD);
-            if("vendredi".equals(day)){
-                c.add(Calendar.DATE, 3);  // number of days to add
-            } else {
-                c.add(Calendar.DATE, 1);
+            if( (!"samedi".equals(day)) && (!"dimanche".equals(day))){
+                List<Planning> pls = planningFacadeLocal.findByNumeroSalleDateJ(evt.getIdSalle(), dateD);
+                if(pls.isEmpty()){
+                    Planning nP = new Planning();
+                    nP.setEtat(etat);
+                    PlanningPK pPK = new PlanningPK();
+                    pPK.setNumeroSalle(evt.getIdSalle());
+                    pPK.setDateJ(dateD);
+                    nP.setPlanningPK(pPK);
+                    planningFacadeLocal.create(nP);
+                }else{
+                    pls.get(0).setEtat(etat);
+                }
+                
+                
+                
+                days--;
+                
             }
-            
-            dateD = c.getTime();
-            //System.out.println("APRES : " + date);
+            dateD.setTime(dateD.getTime()+(25*3600*1000));
         }
+        
         System.out.println("Salle correctement passée en état " + etat + " !");
     }
 
     @Override
     public void supprimerPlanning(EvenementFormationAnnulation evt) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - supprimerPlanning() : " + evt.toString());
-
         String numeroSalle = evt.getIdSalle();
         Date dateD = evt.getDateDebut();
         int cpt = evt.getDuree();
         
         for (int i = 0; i < cpt; i++) {
-            Planning p = planningFacadeLocal.findByNumeroSalleDateJ(numeroSalle, dateD);
-            planningFacadeLocal.remove(p);
+            List<Planning> pls = planningFacadeLocal.findByNumeroSalleDateJ(numeroSalle, dateD);
+            
+            if(!pls.isEmpty()){
+                    planningFacadeLocal.remove(pls.get(0));
+            }
+            
             Calendar c = Calendar.getInstance();
             c.setTime(dateD);
             DateFormat df = new SimpleDateFormat("EEEE");
@@ -303,8 +304,6 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
             
             dateD = c.getTime();
             //System.out.println("APRES : " + date);
-            
-            
         }
         System.out.println("Salle libérée !");
     }

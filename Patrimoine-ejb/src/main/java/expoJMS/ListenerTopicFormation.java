@@ -63,8 +63,8 @@ public class ListenerTopicFormation implements MessageListener {
             
             try {
                 evtProjet2 = (EvenementFormationProjet2) om.getObject();
-                gestionPatrimoineLocal.creerPlanning(evtProjet2);
-//                gestionPatrimoineLocal.changerEtat(evtProjet2, "PRESSENTIE");
+                //gestionPatrimoineLocal.creerPlanning(evtProjet2);
+                gestionPatrimoineLocal.changerEtat(evtProjet2, "PRESSENTIE");
             } catch (JMSException ex) {
                 Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.SEVERE, null, ex);
             }
