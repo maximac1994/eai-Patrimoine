@@ -8,29 +8,25 @@ and open the template in the editor.
 <html>
     
     <head>
-        <title>Gestion des salles</title>
+        <title>PATRIMOINE</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <style>
-            @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
             body{
-                font: 1.2em "Fira Sans", sans-serif;
-                background-color: #303030;
-                color : #EEEEEE;
-                font-family: 'Roboto', sans-serif;
+               font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                background-color: #EEEEEE;
             }
             .container-full{
                 width: 700px;
-                
                 margin-left : auto;
                 margin-right:auto;
             }
             .container{
-                background-color: #283740;
+                background-color: #FFFFFF;
                 padding: 15px;
                 margin-bottom:10px;
+                box-shadow: 0px 0px 9px -2px rgba(0,0,0,0.75);
             }
             .libel{
                 font-weight: bold;
@@ -42,60 +38,81 @@ and open the template in the editor.
                 display: inline;
             }
             .item{
-                width: 200px;
+                width: 120px;
+                display: inline;
             }
             .line{
                 display: flex;
                 padding-bottom: 5px;
                 padding-top: 5px;
-                border-bottom: thick double #276B73;
-                text-align: center;
+                border-bottom: 2px solid  #4ee123;
             }
             .line-title{
                 display: flex;
                 margin-bottom : 15px;
-                text-align: center;
+                background-color:  #b1ff9a ;
             }
             h2{
                 text-align: center;
                 margin-top : 5px!important;
-                background-color: #276B73;
+                text-transform: uppercase;
+                
             }
-            h3{
-                text-align: center;
-                font-size: 1em;
+            button{
+                background-color:  #4ee123 ;
+                color : white;
+                border : none;
+                height : 25px;
+                border-radius: 9px 9px 9px 9px;
+                cursor: pointer;
             }
-            label{
-                text-align: center;
-                font-size: 1em;
-                display: inline-block;
+            .valider{
+                margin-top : 10px;
             }
-            input{
-                display: inline-block;
+            .successMsg{
+                background-color: #5974FF;
+                padding: 15px;
+                margin-bottom:10px;
+                box-shadow: 0px 0px 9px -2px rgba(0,0,0,0.75);
             }
         </style>
         
         <script>
+        $( document ).ready(function() {
+            if(window.localStorage.getItem("msg")){
+                $(".successMsgCont").html("<div class='successMsg'>"+window.localStorage.getItem("msg")+"</div>");
+                if(window.localStorage.getItem("status") == 200){
+                    $('.successMsg').css('background-color', '#A5EBA3');
+                }else{
+                    $('.successMsg').css('background-color', '#FFA68C');
+                }
+            
+                window.localStorage.removeItem("msg");
+                window.localStorage.removeItem("status");
+            }
+        });
+            
+            
         jQuery.when(
             jQuery.getJSON("http://localhost:8080/Patrimoine-web/webresources/salle")
         ).done( function(json) {
             var html = "";
             html+="<div class='line-title'>";
-            html+="<div class='item col-md-4'>";
+            html+="<div class='item'>";
             html+="<div class='libel '> Numéro </div></div>";
-            html+="<div class='item col-md-4'>";
+            html+="<div class='item'>";
             html+="<div class='libel'> Capacité </div></div>";
             html+="</div>";
             json.forEach(function(item, index, array) {
                 html+="<div class='line'>";
-                html+="<div class='item col-md-4'>";
+                html+="<div class='item'>";
                 html+="<div class='info'>"+ item.numeroSalle+ "</div>";
                 html+="</div>";
-                html+="<div class='item col-md-4'>";
+                html+="<div class='item'>";
                 html+="<div class='info'>"+item.capacite+ " places </div>";
                 html+="</div>";
-                html+="<div class='item col-md-4'>";
-                html+="<button class='btn btn-danger' onClick='suppression(\""+item.numeroSalle+"\")'><img src=\"https://img.icons8.com/metro/20/FFFFFF/trash.png\"></button>";
+                html+="<div class='item'>";
+                html+="<button onClick='suppression(\""+item.numeroSalle+"\")'><img src=\"https://img.icons8.com/material-sharp/12/FFFFFF/trash.png\"> SUPPRIMER</button>";
                 html+="</div>";
                 html+="</div>";
             });
@@ -109,18 +126,18 @@ and open the template in the editor.
         ).done( function(json) {
             var html = "";
             json.forEach(function(item, index, array) {
-                html+="<div class='line'>";
-                html+="<div class='item col-md-3'>";
-                html+="</div>";
-                html+="<div class='item col-md-2'>";
+                //html+="<div class='line'>";
+                //html+="<div class='item'>";
+                //html+="</div>";
+                html+="<div class='item'>";
                 html+="<div class='info'><input class='ck_equipements' type='checkbox' value='"+item.idEquipement+"'></div>";
                 html+="</div>";
-                html+="<div class='item col-md-4'>";
+                html+="<div class='item'>";
                 html+="<div class='info'>"+ item.nomEquipement+ "</div>";
-                html+="</div>";
-                html+="<div class='item col-md-3'>";
-                html+="</div>";
-                html+="</div>";
+                html+="</div><br>";
+                //html+="<div class='item'>";
+                //html+="</div>";
+                //html+="</div>";
             });
             html+="</div>"; 
             $("#equipements").prepend(html);
@@ -145,18 +162,26 @@ and open the template in the editor.
             res.capacite = capacite;
             res.equipements = equipements;
 
-            postJson("http://localhost:8080/Patrimoine-web/webresources/salle",res,successAjout);
-            //console.log(JSON.stringify(res)); 
+            postJson("http://localhost:8080/Patrimoine-web/webresources/salle",res,
+            function( data ) {
+                window.localStorage.setItem("msg",data.responseText);
+                window.localStorage.setItem("status",data.status);
+                location.reload();
+            });
         }
         
-        function suppression(i){
-            console.log(i);
-            deleteJson("http://localhost:8080/Patrimoine-web/webresources/salle?numeroSalle="+i);
+        function suppression(numeroSalle){
+            deleteJson("http://localhost:8080/Patrimoine-web/webresources/salle?numeroSalle="+numeroSalle,
+            function( data ) {
+                window.localStorage.setItem("msg",data.responseText);
+                window.localStorage.setItem("status",data.status);
+                location.reload();
+            });
         }
         
-        function successAjout(){
+        //function successAjout(){
             
-        }
+        //}
         
         function postJson(url, data, callback) {
             return jQuery.ajax({
@@ -171,13 +196,14 @@ and open the template in the editor.
             });
         };   
 
-        function deleteJson(url) {
+        function deleteJson(url, callback) {
             return jQuery.ajax({
                 headers: { 
                     'Content-Type': 'application/json' 
                 },
                 type: 'DELETE',
-                url: url
+                url: url,
+                complete : callback
             });
         }; 
     
@@ -185,6 +211,7 @@ and open the template in the editor.
     </head>
     <body>
         <div class = "container-full">
+            <div class="successMsgCont"></div>
             <div class = "container">
                 <h2>Salles</h2>
 
@@ -195,16 +222,19 @@ and open the template in the editor.
             <div class = "container">
                 <h2>Création d'une salle</h2>
                 <div>
-                    <label for='numeroSalle' class='col-md-4'>Numéro de la salle : </label>
-                    <input class='form-control col-md-4' type='text' id = "numeroSalle"/>
-                </div>
-                <h3 class='col-md-4'>Capacité</h3>
-                <input class='form-control col-md-6' type='text' id = "capacite"/>
-                <h3>Equipements d'une salle à ajouter</h3>
+                    <label for='numeroSalle'><b>Numéro de la salle : </b></label>
+                    <input class='form-control' type='text' id = "numeroSalle"/>
+                </div><br>
+                <div>
+                    <label for='capacite'><b>Capacité : </b></label>
+                    <input class='form-control' type='text' id = "capacite"/>
+                </div><br>
+                <label for='' ><b>Equipements de la salle : </b></label>
+                <br><br>
                 <div id="equipements"></div>
                 
                 <br>
-                <button onClick="ajout()">Valider</button>
+                <button onClick="ajout()"><img src="https://img.icons8.com/ios-glyphs/12/FFFFFF/ok.png"> VALIDER</button>
             </div>
         </div>
     </body>
