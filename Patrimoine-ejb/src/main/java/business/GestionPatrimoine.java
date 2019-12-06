@@ -142,8 +142,11 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         if (salle == null) {
             throw new SalleInconnueException();
         }
+        System.out.println(numeroSalle);
         //List<SalleEquipementPK> listSallesEPK = salleEquipementFacadeLocal.findByNum(numeroSalle);
-        SalleEquipement salleE = salleEquipementFacadeLocal.find(numeroSalle);
+        //SalleEquipement salleE = salleEquipementFacadeLocal.find(numeroSalle);
+        
+        //System.out.println(salleE);
         //System.out.println(salleE);
         //System.out.println(listSallesEPK);
         // SalleEquipementPK salleEPK = salleE.getSalleEquipementPK();
@@ -151,7 +154,7 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         salleFacadeLocal.remove(salle);
         
         //for (SalleEquipementPK sePK : listSallesEPK) {
-            salleEquipementFacadeLocal.remove(salleE);
+            //salleEquipementFacadeLocal.remove(salleE);
         //}
     }
 

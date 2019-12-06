@@ -1,10 +1,212 @@
 <!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
 <html>
+    
     <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Gestion des salles</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+            body{
+                font: 1.2em "Fira Sans", sans-serif;
+                background-color: #303030;
+                color : #EEEEEE;
+                font-family: 'Roboto', sans-serif;
+            }
+            .container-full{
+                width: 700px;
+                
+                margin-left : auto;
+                margin-right:auto;
+            }
+            .container{
+                background-color: #283740;
+                padding: 15px;
+                margin-bottom:10px;
+            }
+            .libel{
+                font-weight: bold;
+                display: inline;
+                font-size: 22px;
+                text-transform: uppercase;
+            }
+            .info{
+                display: inline;
+            }
+            .item{
+                width: 200px;
+            }
+            .line{
+                display: flex;
+                padding-bottom: 5px;
+                padding-top: 5px;
+                border-bottom: thick double #276B73;
+                text-align: center;
+            }
+            .line-title{
+                display: flex;
+                margin-bottom : 15px;
+                text-align: center;
+            }
+            h2{
+                text-align: center;
+                margin-top : 5px!important;
+                background-color: #276B73;
+            }
+            h3{
+                text-align: center;
+                font-size: 1em;
+            }
+            label{
+                text-align: center;
+                font-size: 1em;
+                display: inline-block;
+            }
+            input{
+                display: inline-block;
+            }
+        </style>
+        
+        <script>
+        jQuery.when(
+            jQuery.getJSON("http://localhost:8080/Patrimoine-web/webresources/salle")
+        ).done( function(json) {
+            var html = "";
+            html+="<div class='line-title'>";
+            html+="<div class='item col-md-4'>";
+            html+="<div class='libel '> Numéro </div></div>";
+            html+="<div class='item col-md-4'>";
+            html+="<div class='libel'> Capacité </div></div>";
+            html+="</div>";
+            json.forEach(function(item, index, array) {
+                html+="<div class='line'>";
+                html+="<div class='item col-md-4'>";
+                html+="<div class='info'>"+ item.numeroSalle+ "</div>";
+                html+="</div>";
+                html+="<div class='item col-md-4'>";
+                html+="<div class='info'>"+item.capacite+ " places </div>";
+                html+="</div>";
+                html+="<div class='item col-md-4'>";
+                html+="<button class='btn btn-danger' onClick='suppression(\""+item.numeroSalle+"\")'><img src=\"https://img.icons8.com/metro/20/FFFFFF/trash.png\"></button>";
+                html+="</div>";
+                html+="</div>";
+            });
+            
+            html+="</div>"; 
+            $("#salles").prepend(html);
+        });
+        
+        jQuery.when(
+            jQuery.getJSON("http://localhost:8080/Patrimoine-web/webresources/equipement")
+        ).done( function(json) {
+            var html = "";
+            json.forEach(function(item, index, array) {
+                html+="<div class='line'>";
+                html+="<div class='item col-md-3'>";
+                html+="</div>";
+                html+="<div class='item col-md-2'>";
+                html+="<div class='info'><input class='ck_equipements' type='checkbox' value='"+item.idEquipement+"'></div>";
+                html+="</div>";
+                html+="<div class='item col-md-4'>";
+                html+="<div class='info'>"+ item.nomEquipement+ "</div>";
+                html+="</div>";
+                html+="<div class='item col-md-3'>";
+                html+="</div>";
+                html+="</div>";
+            });
+            html+="</div>"; 
+            $("#equipements").prepend(html);
+        });
+        
+        function ajout(){
+            var numeroSalle = $('#numeroSalle').val();
+            var capacite = $('#capacite').val();
+            var equipements = new Array();
+            var inputElements = document.getElementsByClassName('ck_equipements');
+
+            for(var i=0; i<inputElements.length; i++){
+                if(inputElements[i].checked){
+                   var equipement = {};
+                   checkedValue = inputElements[i].value;
+                   equipements.push(checkedValue);
+                }
+            }
+            
+            var res= {numeroSalle : "", capacite : "", equipements :[]};
+            res.numeroSalle = numeroSalle;
+            res.capacite = capacite;
+            res.equipements = equipements;
+
+            postJson("http://localhost:8080/Patrimoine-web/webresources/salle",res,successAjout);
+            //console.log(JSON.stringify(res)); 
+        }
+        
+        function suppression(i){
+            console.log(i);
+            deleteJson("http://localhost:8080/Patrimoine-web/webresources/salle?numeroSalle="+i);
+        }
+        
+        function successAjout(){
+            
+        }
+        
+        function postJson(url, data, callback) {
+            return jQuery.ajax({
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                type: 'POST',
+                url: url,
+                data: JSON.stringify(data),
+                success: callback,
+                dataType: 'json'
+            });
+        };   
+
+        function deleteJson(url) {
+            return jQuery.ajax({
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                type: 'DELETE',
+                url: url
+            });
+        }; 
+    
+        </script>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <div class = "container-full">
+            <div class = "container">
+                <h2>Salles</h2>
+
+                <div id="salles"></div>
+                
+            </div>
+
+            <div class = "container">
+                <h2>Création d'une salle</h2>
+                <div>
+                    <label for='numeroSalle' class='col-md-4'>Numéro de la salle : </label>
+                    <input class='form-control col-md-4' type='text' id = "numeroSalle"/>
+                </div>
+                <h3 class='col-md-4'>Capacité</h3>
+                <input class='form-control col-md-6' type='text' id = "capacite"/>
+                <h3>Equipements d'une salle à ajouter</h3>
+                <div id="equipements"></div>
+                
+                <br>
+                <button onClick="ajout()">Valider</button>
+            </div>
+        </div>
     </body>
+    
 </html>
