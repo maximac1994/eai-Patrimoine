@@ -3,6 +3,7 @@ import com.google.gson.Gson;
 import entities.Salle;
 import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
+import exceptions.SalleOccupeeException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -49,12 +50,21 @@ public class SalleRest {
         serviceSalleLocal = lookupServiceSalle();
     }
     
+    /**
+     * Renvoie la liste des salles
+     * @return la liste des salles
+     */
     @GET
     @Produces (MediaType.APPLICATION_JSON)
     public Response listSalles() {
         return Response.ok(gson.toJson(serviceSalleLocal.listerSalles())).build();
     }
     
+    /**
+     * Ajoute une salle saisie par l'utilisateur
+     * @param content
+     * @return la réponse positive ou le message d'erreur
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addSalle(String content) {
@@ -72,14 +82,22 @@ public class SalleRest {
         return Response.ok("Salle correctement ajoutée !").build();
     }
     
-
+    /**
+     * Supprime la salle choisie par l'utilisateur
+     * @param numeroSalle
+     * @return la réponse positive ou les messages d'erreurs
+     * @throws SalleInconnueException
+     * @throws SalleOccupeeException 
+     */
     @DELETE
-    public Response removeSalle(@QueryParam("numeroSalle") String numeroSalle) throws SalleInconnueException {
+    public Response removeSalle(@QueryParam("numeroSalle") String numeroSalle) throws SalleInconnueException, SalleOccupeeException {
 
         try {
             serviceSalleLocal.supprimerSalle(numeroSalle);
         } catch (SalleInconnueException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Salle inexistante !").build();
+        } catch (SalleOccupeeException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Salle occupée !").build();
         }
         return Response.ok("Salle correctement supprimée !").build();
     }

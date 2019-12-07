@@ -13,6 +13,7 @@ import entities.Equipement;
 import entities.Salle;
 import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
+import exceptions.SalleOccupeeException;
 import java.util.Date;
 import java.util.List;
 import ressources.REquipement;
@@ -25,7 +26,7 @@ public interface GestionPatrimoineLocal {
     
     void creerSalle(String numeroSalle, int capacite, List<Integer> equipements) throws SalleExistanteException;
     
-    void supprimerSalle(String numeroSalle) throws SalleInconnueException;
+    void supprimerSalle(String numeroSalle) throws SalleInconnueException, SalleOccupeeException;
     
     void creerPlanning(EvenementFormationProjet2 evt);
     

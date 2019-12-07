@@ -19,6 +19,7 @@ import entities.SalleEquipement;
 import entities.SalleEquipementPK;
 import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
+import exceptions.SalleOccupeeException;
 import expoJMS.SenderFileListeRessources;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -62,7 +63,13 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         this.sender = new SenderFileListeRessources();
     }
 
-    
+    /**
+     * Créer une salle et les affecte les équipements souhaités
+     * @param numeroSalle
+     * @param capacite
+     * @param equipements
+     * @throws SalleExistanteException 
+     */
     @Override
     public void creerSalle(String numeroSalle, int capacite, List<Integer> equipements) throws SalleExistanteException {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - creerSalle() : " + numeroSalle + ", " + capacite + ", " + equipements.toString());
@@ -86,6 +93,10 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         
     }
 
+    /**
+     * Créer un planning pour une salle, et passe celle-ci en etat PRESSENTIE pour ces dates
+     * @param evt 
+     */
     @Override
     public void creerPlanning(EvenementFormationProjet2 evt) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - creerPlanning() : " + evt.toString());
@@ -123,42 +134,52 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         System.out.println("Salle correctement réservée du " + dateDebut + " au " + dateFin + ". Etat PRESSENTIE !");
     }
 
+    /**
+     * Retourne la liste de toutes les salles existantes
+     * @return la liste de toutes les salles existantes
+     */
     @Override
     public List<Salle> listerSalles() {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - listerSalles()");
         return salleFacadeLocal.findAll();
     }
 
+    /**
+     * Retourne la liste de tous les équipements existants
+     * @return la liste de tous les équipements existants
+     */
     @Override
     public List<Equipement> listerEquipements() {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - listerEquipements()");
         return equipementFacadeLocal.findAll();
     }
 
+    /**
+     * Supprime une salle
+     * @param numeroSalle
+     * @throws SalleInconnueException 
+     */
     @Override
-    public void supprimerSalle(String numeroSalle) throws SalleInconnueException {
+    public void supprimerSalle(String numeroSalle) throws SalleInconnueException, SalleOccupeeException {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - supprimerSalle() : " + numeroSalle);
         Salle salle = salleFacadeLocal.find(numeroSalle);
+        List<Planning> planning = planningFacadeLocal.getDatesOccupees(numeroSalle);
+        System.out.println(planning);
+        if(!planning.isEmpty()){
+           throw new SalleOccupeeException();
+        }
         if (salle == null) {
             throw new SalleInconnueException();
         }
-        System.out.println(numeroSalle);
-        //List<SalleEquipementPK> listSallesEPK = salleEquipementFacadeLocal.findByNum(numeroSalle);
-        //SalleEquipement salleE = salleEquipementFacadeLocal.find(numeroSalle);
-        
-        //System.out.println(salleE);
-        //System.out.println(salleE);
-        //System.out.println(listSallesEPK);
-        // SalleEquipementPK salleEPK = salleE.getSalleEquipementPK();
         
         salleFacadeLocal.remove(salle);
-        
-        //for (SalleEquipementPK sePK : listSallesEPK) {
-            //salleEquipementFacadeLocal.remove(salleE);
-        //}
     }
 
-
+    /**
+     * Retourne une salle spécifiée par son numéro
+     * @param numeroSalle
+     * @return une salle
+     */
     @Override
     public Salle getSalle(String numeroSalle) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - getSalle() : " + numeroSalle);
@@ -166,6 +187,10 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         return salle;
     }
 
+    /**
+     * Demande au sender d'envoyer la liste de salles compatibles à la demande.
+     * @param dr 
+     */
     @Override
     public void envoyerListeSallesComp(DemandeRessources dr) {
         try {
@@ -203,8 +228,7 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
                             nbEquip++;
                         }
                     }
-                    //System.out.print("nbequip : " + nbEquip);
-                    //System.out.print("taille liste : " + listeEquipementsNec.size());
+                    
                     // Si le nombre d'équipement correspond
                     if (nbEquip == listeEquipementsNec.size()) {
                         equipOK = true;
@@ -220,16 +244,19 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
                     salleComp.setNumeroSalle(salle.getNumeroSalle());
                     salleComp.setDatesOccupees(getDatesOccupees(salle.getNumeroSalle())); // Récupération du planning de la salle (dates occupées)
                     listeSallesComp.getListeSallesComp().add(salleComp); // Ajout de la salle à la liste à renvoyer
-//                System.out.print(salle.getNumeroSalle() + " - " + getDatesOccupees(salle.getNumeroSalle()));
                 }
             }
-            //System.out.print(listeSallesComp.getListeSallesComp().get(0).getNumeroSalle());
             sender.sendListeSallesComp(listeSallesComp);
         } catch (JMSException ex) {
             Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
+    /**
+     * Récupère les dates pour lesquelles la salle est indisponible
+     * @param numeroSalle
+     * @return la liste des dates pour lesquelles la salle est indisponible
+     */
     private List<Date> getDatesOccupees(String numeroSalle) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - getDatesOccupees() : " + numeroSalle);
 
@@ -245,6 +272,11 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
         return listeDates;
     }
 
+    /**
+     * Change l'état d'une salle pour des dates précises
+     * @param evt
+     * @param etat 
+     */
     @Override
     public void changerEtat(EvenementFormationChangeEtat evt, String etat) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - changerEtat() : " + evt.toString() + ", " + etat);
@@ -268,19 +300,18 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
                     planningFacadeLocal.create(nP);
                 }else{
                     pls.get(0).setEtat(etat);
-                }
-                
-                
-                
+                }      
                 days--;
-                
             }
             dateD.setTime(dateD.getTime()+(25*3600*1000));
         }
-        
         System.out.println("Salle correctement passée en état " + etat + " !");
     }
 
+    /**
+     * Libère une salle sur des dates précises
+     * @param evt 
+     */
     @Override
     public void supprimerPlanning(EvenementFormationAnnulation evt) {
         Logger.getLogger(GestionPatrimoine.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.business GestionPatrimoine - supprimerPlanning() : " + evt.toString());
@@ -306,7 +337,6 @@ public class GestionPatrimoine implements GestionPatrimoineLocal {
             }
             
             dateD = c.getTime();
-            //System.out.println("APRES : " + date);
         }
         System.out.println("Salle libérée !");
     }

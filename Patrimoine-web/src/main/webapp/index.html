@@ -125,19 +125,13 @@ and open the template in the editor.
             jQuery.getJSON("http://localhost:8080/Patrimoine-web/webresources/equipement")
         ).done( function(json) {
             var html = "";
-            json.forEach(function(item, index, array) {
-                //html+="<div class='line'>";
-                //html+="<div class='item'>";
-                //html+="</div>";
+            json.forEach(function(item) {
                 html+="<div class='item'>";
                 html+="<div class='info'><input class='ck_equipements' type='checkbox' value='"+item.idEquipement+"'></div>";
                 html+="</div>";
                 html+="<div class='item'>";
                 html+="<div class='info'>"+ item.nomEquipement+ "</div>";
                 html+="</div><br>";
-                //html+="<div class='item'>";
-                //html+="</div>";
-                //html+="</div>";
             });
             html+="</div>"; 
             $("#equipements").prepend(html);
@@ -151,7 +145,7 @@ and open the template in the editor.
 
             for(var i=0; i<inputElements.length; i++){
                 if(inputElements[i].checked){
-                   var equipement = {};
+                   //var equipement = {};
                    checkedValue = inputElements[i].value;
                    equipements.push(checkedValue);
                 }
@@ -161,8 +155,9 @@ and open the template in the editor.
             res.numeroSalle = numeroSalle;
             res.capacite = capacite;
             res.equipements = equipements;
+            console.log(res);
 
-            postJson("http://localhost:8080/Patrimoine-web/webresources/salle",res,
+            postJson("http://localhost:8080/Patrimoine-web/webresources/salle", res,
             function( data ) {
                 window.localStorage.setItem("msg",data.responseText);
                 window.localStorage.setItem("status",data.status);
@@ -173,15 +168,12 @@ and open the template in the editor.
         function suppression(numeroSalle){
             deleteJson("http://localhost:8080/Patrimoine-web/webresources/salle?numeroSalle="+numeroSalle,
             function( data ) {
+                console.log(data);
                 window.localStorage.setItem("msg",data.responseText);
                 window.localStorage.setItem("status",data.status);
                 location.reload();
             });
         }
-        
-        //function successAjout(){
-            
-        //}
         
         function postJson(url, data, callback) {
             return jQuery.ajax({
@@ -191,7 +183,7 @@ and open the template in the editor.
                 type: 'POST',
                 url: url,
                 data: JSON.stringify(data),
-                success: callback,
+                complete: callback,
                 dataType: 'json'
             });
         };   

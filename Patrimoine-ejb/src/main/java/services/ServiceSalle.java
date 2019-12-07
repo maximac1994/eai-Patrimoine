@@ -16,6 +16,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.Gson;
 import exceptions.SalleExistanteException;
 import exceptions.SalleInconnueException;
+import exceptions.SalleOccupeeException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,10 @@ public class ServiceSalle implements ServiceSalleLocal {
     @EJB
     GestionPatrimoineLocal gestionPatrimoineLocal;
     
+    /**
+     * Demande au business de lister les salles existantes
+     * @return 
+     */
     @Override
     public List<Salle> listerSalles() {
         Logger.getLogger(ServiceSalle.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.services ServiceSalle - listerSalles()");
@@ -39,6 +44,11 @@ public class ServiceSalle implements ServiceSalleLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 
+    /**
+     * Demande au business de créer une salle
+     * @param salle
+     * @throws SalleExistanteException 
+     */
     @Override
     public void ajouterSalle(RSalle salle) throws SalleExistanteException {
         Logger.getLogger(ServiceSalle.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.services ServiceSalle - ajouterSalle() : " + salle);
@@ -52,13 +62,23 @@ public class ServiceSalle implements ServiceSalleLocal {
         //return "Ok";
     }
 
+    /**
+     * Demande au business de supprimer une salle spécifique
+     * @param numeroSalle
+     * @throws SalleInconnueException 
+     */
     @Override
-    public void supprimerSalle(String numeroSalle) throws SalleInconnueException {
+    public void supprimerSalle(String numeroSalle) throws SalleInconnueException, SalleOccupeeException {
         Logger.getLogger(ServiceSalle.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.services ServiceSalle - supprimerSalle() : " + numeroSalle);
   
         gestionPatrimoineLocal.supprimerSalle(numeroSalle);
     }
     
+    /**
+     * Demaned au business de retourner une salle spécifique
+     * @param numeroSalle
+     * @return 
+     */
     @Override
     public Salle getSalle(String numeroSalle) {
         Logger.getLogger(ServiceSalle.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.services ServiceSalle - getSalle() : " + numeroSalle);
