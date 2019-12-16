@@ -40,6 +40,11 @@ public class ListenerTopicDemandeListeRessources implements MessageListener {
     public ListenerTopicDemandeListeRessources() {
     }
     
+    /**
+     * Récupération des messages du Topic TOPIC_DEMANDE_LISTE_RESSOURCES,
+     * Puis demande l'envoi des listes compatibles
+     * @param message 
+     */
     @Override
     public void onMessage(Message message) {
         Logger.getLogger(ListenerTopicDemandeListeRessources.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.expoJMS ListenerTopicDemandeListeRessources - onMessage() : " + message.toString());

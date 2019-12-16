@@ -42,11 +42,18 @@ public class ListenerTopicFormation implements MessageListener {
     public ListenerTopicFormation() {
     }
     
+    /**
+     * Récupération des messages du Topic TOPIC_FORMATION,
+     * Puis, en fonction du JMSType du message, demande :
+     * - Libération de la salle
+     * - Changement d'état de la salle
+     * @param message 
+     */
     @Override
     public void onMessage(Message message) {
         Logger.getLogger(ListenerTopicFormation.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE] Package.expoJMS ListernerTopicFormation - onMessage() : " + message.toString());
 
-//        System.out.println("LAAAAA");
+
         ObjectMessage om = (ObjectMessage)message;
         EvenementFormationAnnulation evtAnnulation;
         EvenementFormationProjet2 evtProjet2;

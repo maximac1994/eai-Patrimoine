@@ -34,6 +34,9 @@ public class SenderFileListeRessources {
     Session session = null;
     MessageProducer sender = null;
 
+    /**
+     * Création du contexte JNDI
+     */
     public void createContext() {
         try {
             // create the JNDI initial context.
@@ -47,6 +50,10 @@ public class SenderFileListeRessources {
         }
     }
 
+    /**
+     * Connexion à la ConnectionFactory
+     * @throws JMSException 
+     */
     public void connect() throws JMSException {
         // create the connection
         connection = factory.createConnection();
@@ -58,6 +65,11 @@ public class SenderFileListeRessources {
         connection.start();
     }
 
+    /**
+     * Envoie dans la file FILE_LISTE_RESSOURCES les salles compatibles avec une formation
+     * @param liste
+     * @throws JMSException 
+     */
     public void sendListeSallesComp(ListeSallesCompatibles liste) throws JMSException {
         Logger.getLogger(SenderFileListeRessources.class.getName()).log(Level.INFO, "[APPLI PATRIMOINE]  Package.expoJMS SenderFileListeRessources - onMessage() : " + liste.toString());
         if (context == null) {
